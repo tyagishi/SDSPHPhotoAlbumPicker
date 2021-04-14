@@ -25,7 +25,7 @@ public struct SDSPHPhotoAlbumPicker: View {
         self.selectionLimit = limit
         self.columns = [GridItem(.fixed(gridWidth)), GridItem(.fixed(gridWidth)), GridItem(.fixed(gridWidth))]
         if limit > 0 {
-            if selectedAlbums.count >= limit {
+            if limit < selectedAlbums.count {
                 adjustSelection()
             }
         }
