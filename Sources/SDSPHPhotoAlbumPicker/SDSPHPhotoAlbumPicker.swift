@@ -35,7 +35,8 @@ struct StackedImageView: View {
                             .offset(x: CGFloat(index) * offset, y: CGFloat(index) * offset)
                     }
                 } else { // empty album image
-                    Image(uiImage: UIImage(named: "EmptyAlbum")!).resizable().scaledToFit()
+                    Image("EmptyAlbum", bundle: Bundle.module)
+                        .resizable().scaledToFit()
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                 }
             }
