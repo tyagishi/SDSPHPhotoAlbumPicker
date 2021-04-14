@@ -11,60 +11,63 @@ import Photos
 public struct SDSPHPhotoAlbumPicker: View {
     @Binding var isPresented: Bool
     @Binding var selectedAlbums:[PHAssetCollection]
+    let selectionLimit:Int // 0 means infinite, 0< means maximum num of albums
 
     @State var albums:[PHAssetCollection] = []
     @State var albumThumbs:[[UIImage]] = []
-    @State var gridWidth: CGFloat = 200
 
-    let selectionLimit:Int // 0 means infinite, 0< means maximum num of albums
-    var columns: [GridItem] = []
-    
+    /// SDSPHPhotoAlbumPicker initializer
+    /// - Parameters:
+    ///   - isPresented: binding presented flag (change false to close)
+    ///   - selection: binding to PHAssetCollection Array (note: PHAssetCollection is Photo Album)
+    ///   - limit: specify how many albums can be selected (0 means infinity)
     public init(isPresented: Binding<Bool>, selection: Binding<[PHAssetCollection]>, limit: Int = 0) {
         self._isPresented = isPresented
         self._selectedAlbums = selection
         self.selectionLimit = limit
-        self.columns = [GridItem(.fixed(gridWidth)), GridItem(.fixed(gridWidth)), GridItem(.fixed(gridWidth))]
         if limit > 0 {
             if limit < selectedAlbums.count {
                 adjustSelection()
             }
         }
-        
     }
 
     public var body: some View {
-        VStack {
-            HStack {
-                Text("All Photo Albums").bold()
-            }
-            .frame(maxWidth: .infinity)
-            .overlay(Button(action: { isPresented.toggle() }, label: { Text("Done") }), alignment: .trailing)
-            .padding()
-            .background(Color.gray.opacity(0.5))
-            LazyVGrid(columns: columns) {
-                ForEach( Array(zip(albums, albumThumbs)), id: \.0 ) { item in
-                    VStack {
-                        StackedImageView(elementID: item.0, images: item.1, selectedElementsIDs: selectedAlbums)
-                            .frame(minHeight: 100)
-                        Text(item.0.localizedTitle ?? "no title")
-                            .frame(alignment: .bottom)
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        if let index = selectedAlbums.firstIndex(of: item.0) {
-                            selectedAlbums.remove(at: index)
-                        } else {
-                            selectedAlbums.append(item.0)
-                            adjustSelection()
+        GeometryReader { geom in
+            VStack {
+                HStack {
+                    Text("All Photo Albums").bold()
+                }
+                .frame(maxWidth: .infinity)
+                .overlay(Button(action: { isPresented.toggle() }, label: { Text("Done") }), alignment: .trailing)
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 5).fill(Color.gray.opacity(0.5)))
+                //LazyVGrid(columns: Array(repeating: GridItem(.fixed(geom.size.width / 3.5)), count: 3)) {
+                LazyVGrid(columns: Array(repeating: GridItem(.adaptive(minimum: geom.size.width / 4, maximum: geom.size.width / 3)), count: 3)) {
+                    ForEach( Array(zip(albums, albumThumbs)), id: \.0 ) { item in
+                        VStack {
+                            StackedImageView(elementID: item.0, images: item.1, selectedElementsIDs: selectedAlbums)
+                                .frame(minHeight: 100)
+                            Text(item.0.localizedTitle ?? "no title")
+                                .frame(alignment: .bottom)
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            if let index = selectedAlbums.firstIndex(of: item.0) {
+                                selectedAlbums.remove(at: index)
+                            } else {
+                                selectedAlbums.append(item.0)
+                                adjustSelection()
+                            }
                         }
                     }
+                    .padding()
                 }
-                .padding()
+                Spacer()
             }
-            Spacer()
-        }
-        .onAppear {
-            self.retrieveAlbums()
+            .onAppear {
+                self.retrieveAlbums()
+            }
         }
     }
     
