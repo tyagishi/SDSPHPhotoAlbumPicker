@@ -1,5 +1,6 @@
 # SDSPHPhotoAlbumPicker
 
+![platform](https://img.shields.io/badge/Platform-macOS/iOS)
 ![iOS](https://img.shields.io/badge/iOS-v14_orLater-blue)
 ![package manager](https://img.shields.io/badge/SPM-Supported-orange)
 ![license](https://img.shields.io/badge/license-MIT-lightgrey)
