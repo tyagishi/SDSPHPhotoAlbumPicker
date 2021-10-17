@@ -25,7 +25,7 @@ let package = Package(
             name: "SDSPHPhotoAlbumPicker",
             dependencies: [],
             resources: [
-                .copy("EmptyAlbum")
+//                .copy("EmptyAlbum")
             ]
         ),
         .testTarget(
